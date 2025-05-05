@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCQ Practice Platform - Weekly Quiz 7</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+    <div class="container mx-auto p-4 max-w-3xl">
+        <h1 class="text-3xl font-bold text-center mb-6">Weekly Quiz 7 - IT Audit & Database Concepts</h1>
+
+        <!-- Progress and Score -->
+        <div class="bg-white p-4 rounded-lg shadow-md mb-6 flex justify-between items-center">
+            <div>
+                <p class="text-lg font-semibold">Progress: <span id="progress">0/0</span></p>
+                <p class="text-lg font-semibold">Score: <span id="score">0</span></p>
+            </div>
+            <button onclick="resetProgress()" class="bg-red-500 text-white p-2 rounded-lg hover:bg-red-600">Reset Progress</button>
+        </div>
+
+        <!-- Question Display -->
+        <div id="questionContainer" class="bg-white p-6 rounded-lg shadow-md mb-6">
+            <h2 class="text-xl font-semibold mb-4" id="questionText">Loading...</h2>
+            <div id="optionsContainer" class="space-y-2"></div>
+            <button id="finishButton" onclick="finishQuiz()" class="mt-4 bg-green-500 text-white p-2 rounded-lg hover:bg-green-600 hidden">Finish Quiz</button>
+        </div>
+
+        <!-- Results Display -->
+        <div id="resultsContainer" class="bg-white p-6 rounded-lg shadow-md mb-6 hidden">
+            <h2 class="text-xl font-semibold mb-4">Quiz Results</h2>
+            <div id="resultsList" class="space-y-4"></div>
+            <button onclick="resetProgress()" class="mt-4 bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600">Restart Quiz</button>
+        </div>
+
+        <!-- Navigation -->
+        <div id="navigation" class="flex justify-between">
+            <button onclick="prevQuestion()" class="bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600">Previous</button>
+            <button onclick="nextQuestion()" class="bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600">Next</button>
+        </div>
+    </div>
+
+    <script>
+        // MCQ data based on Weekly Quiz 7
+        const mcqData = [
+            {
+                id: 1,
+                question: "If a database is restored using before-image dumps, where should the process begin following an interruption?",
+                options: ["Before the last transaction", "At the last transaction before the latest checkpoint", "After the last transaction", "As the first transaction after the latest checkpoint"],
+                correctAnswer: "Before the last transaction",
+                explanation: "If before images are used, the last transaction in the dump will not have updated the database prior to the dump being taken. The last transaction will not have updated the database and must be reprocessed. Program checkpoints are irrelevant in this situation."
+            },
+            {
+                id: 2,
+                question: "When engaging services from external auditors, which of the following should be established FIRST?",
+                options: ["Nondisclosure agreements", "Service level agreements", "Operational level agreements", "Termination conditions agreements"],
+                correctAnswer: "Nondisclosure agreements"
+            },
+            {
+                id: 3,
+                question: "Which of the following is the BEST method to maintain an audit trail of changes made to the source code of a program?",
+                options: ["Document details on a change register", "Embed details within source code", "Standardize file naming conventions", "Utilize automated version control"],
+                correctAnswer: "Utilize automated version control"
+            },
+            {
+                id: 4,
+                question: "During an audit of information security procedures of a large retailer's online store, an IS auditor notes that operating system (OS) patches are automatically deployed upon release. Which of the following should be of GREATEST concern to the auditor?",
+                options: ["Patches are not tested before installation on critical servers", "Patches are in conflict with current licensing agreements", "Patches are not reflected in the configuration management database", "Patches are pushed from the vendor increasing Internet traffics"],
+                correctAnswer: "Patches are not tested before installation on critical servers"
+            },
+            {
+                id: 5,
+                question: "An IS auditor is observing transaction processing and notes that a high-priority update job ran out of sequence. What is the MOST significant risk from this observation?",
+                options: ["Previous jobs may have failed", "The job may not have run to completion", "The job competes with invalid data", "Daily schedules may not be accurate"],
+                correctAnswer: "The job competes with invalid data"
+            },
+            {
+                id: 6,
+                question: "Which of the following would be the MOST significant audit finding when reviewing a point-of-sale (POS) system?",
+                options: ["Customer credit card information is stored unencrypted on the local POS system", "An optical scanner is not used to read bar codes for the generation of sales invoices", "Frequent power outages occur, resulting in the manual preparation of invoices", "invoices recorded on the POS system are manually entered into an accounting application"],
+                correctAnswer: "Customer credit card information is stored unencrypted on the local POS system",
+                explanation: "It is important for the IS auditor to determine if any credit card information is stored on the local point-of-sale (POS) system. Any such information, if stored, should be encrypted or protected by other means to avoid the possibility of unauthorized disclosure. Manually inputting sale invoices into the accounting application is an operational issue, if the POS system were to be interfaced with the financial accounting application, the overall efficiency could be improved. The nonavailability of optical scanners to read bar codes of the products and power outages are operational issues."
+            },
+            {
+                id: 7,
+                question: "An IS auditor finds that a mortgage origination team receives customer mortgage applications via a shared repository. Which of the following test procedures is the BEST way to assess whether there are adequate privacy controls over this process?",
+                options: ["Validate whether documents are deleted according to data retention procedures", "Validate whether the encryption is compliant with the organization's requirements", "Validate that data is entered accurately and timely", "Validate whether complex passwords are required"],
+                correctAnswer: "Validate whether the encryption is compliant with the organization's requirements"
+            },
+            {
+                id: 8,
+                question: "In RFID technology which of the following risk could represent a threat to non-RFID networked or collocated systems, assets, and people?",
+                options: ["Business Intelligence Risk", "Privacy Risk", "Externality Risk", "Business Process Risk"],
+                correctAnswer: "Externality Risk",
+                explanation: "RFID technology potentially could represent a threat to non-RFID networked or collocated systems, assets, and people. RFID systems typically are not isolated from other systems and assets in the enterprise. Every connection point between the RFID system and something outside the RFID system represents a potential vulnerability for the entity on the other side of the connection, whether that is an application process, a valued asset, or a person. Externality risks are present for both the RF and enterprise subsystems of an RFID system. The main externality risk for the RF subsystem is hazards resulting from electromagnetic radiation, which could possibly range from adverse human health effects to ignition of combustible material, such as fuel or ordnance."
+            },
+            {
+                id: 9,
+                question: "Which of the following tasks would cause the GREATEST segregation of duties (SoD) concern if performed by the person who reconciles the organization's device inventory?",
+                options: ["Issuing devices to employees", "Creating the device policy", "Tracking devices used for spare parts", "Approving the issuing of devices"],
+                correctAnswer: "Issuing devices to employees"
+            },
+            {
+                id: 10,
+                question: "Proper segregation of duties prevents a computer operator (user) from performing security administration duties. True or false?",
+                options: ["True", "False"],
+                correctAnswer: "True"
+            },
+            {
+                id: 11,
+                question: "What is the BEST outcome that an organization could hope for when considering to denormalize the database?",
+                options: ["save storage space", "increase processing efficiency", "ensure data integrity", "prevent loss of data"],
+                correctAnswer: "increase processing efficiency"
+            },
+            {
+                id: 12,
+                question: "Atomicity enforces data integrity by ensuring that a transaction is either completed in its entirely or not at all. Atomicity is part of the ACID test reference for transaction processing. True or false?",
+                options: ["True", "False"],
+                correctAnswer: "True"
+            },
+            {
+                id: 13,
+                question: "Consider two tables, Orders and Customers. Orders has a CustomerID column that is a foreign key referencing the CustomerID in the Customers table. You need to delete a Customer record, but there are Orders referencing this customer. What is the result if you have defined the foreign key with ON DELETE RESTRICT?",
+                options: ["The deletion of the Customer record will be allowed as long as there are no matching Orders", "The deletion of the Customer record will fail because of the foreign key reference", "The deletion of the Customer record will cause all related Orders to be set to NULL", "The Customer record will be deleted, and all related Orders will be deleted as well"],
+                correctAnswer: "The deletion of the Customer record will fail because of the foreign key reference",
+                explanation: "The specification of ON DELETE RESTRICT enforces referential integrity, hence preventing the record from being deleted."
+            },
+            {
+                id: 14,
+                question: "Suppose the foreign key relationship between Orders and Customers is defined with ON UPDATE CASCADE, and you update the primary key value in the parent table, what happens in the child table?",
+                options: ["The child table values will be set to NULL because of the cascading update", "The child table values will be deleted to maintain data integrity", "The child table will throw an error, as updating a primary key is not allowed", "The foreign key values in the child table will be updated automatically to match the new primary key in the parent table"],
+                correctAnswer: "The foreign key values in the child table will be updated automatically to match the new primary key in the parent table",
+                explanation: "In a relational database, when a foreign key is defined with the ON UPDATE CASCADE option, it creates a cascading effect where any update to the primary key in the parent table is automatically reflected in the child table. This ensures that referential integrity is maintained across tables."
+            },
+            {
+                id: 15,
+                question: "Consider a scenario where the foreign key relationship is between Orders (parent) and Customers (child), and the ON DELETE CASCADE option is set. What is a potential risk of using ON DELETE CASCADE in this scenario?",
+                options: ["It may lead to accidental deletion of important customer records", "As a rule of referential integrity, it prevents any deletion from occurring, regardless of the setting", "It ensures that no other records are impacted when a customer record is deleted", "It guarantees that customer records are never deleted"],
+                correctAnswer: "It may lead to accidental deletion of important customer records"
+            }
+        ];
+
+        // State management
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let userAnswers = {};
+
+        // Load progress from localStorage
+        window.onload = function() {
+            const storedAnswers = localStorage.getItem('mcqUserAnswers');
+            const storedScore = localStorage.getItem('mcqScore');
+            if (storedAnswers) userAnswers = JSON.parse(storedAnswers);
+            if (storedScore) score = parseInt(storedScore);
+            renderQuestion();
+            updateProgress();
+        };
+
+        // Save progress to localStorage
+        function saveProgress() {
+            localStorage.setItem('mcqUserAnswers', JSON.stringify(userAnswers));
+            localStorage.setItem('mcqScore', score);
+        }
+
+        // Render current question
+        function renderQuestion() {
+            document.getElementById('resultsContainer').classList.add('hidden');
+            document.getElementById('questionContainer').classList.remove('hidden');
+            document.getElementById('navigation').classList.remove('hidden');
+
+            const question = mcqData[currentQuestionIndex];
+            document.getElementById('questionText').textContent = question.question;
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = '';
+
+            question.options.forEach(option => {
+                const button = document.createElement('button');
+                button.className = `w-full p-2 text-left rounded-lg border ${userAnswers[question.id] === option ? 'bg-blue-100' : 'bg-white'} hover:bg-blue-50`;
+                button.textContent = option;
+                button.onclick = () => selectAnswer(question.id, option);
+                optionsContainer.appendChild(button);
+            });
+
+            // Show "Finish Quiz" button if all questions are answered
+            const finishButton = document.getElementById('finishButton');
+            if (Object.keys(userAnswers).length === mcqData.length) {
+                finishButton.classList.remove('hidden');
+            } else {
+                finishButton.classList.add('hidden');
+            }
+
+            updateProgress();
+        }
+
+        // Handle answer selection
+        function selectAnswer(questionId, selectedOption) {
+            if (!userAnswers[questionId]) {
+                userAnswers[questionId] = selectedOption;
+                const question = mcqData.find(q => q.id === questionId);
+                if (selectedOption === question.correctAnswer) {
+                    score += 1;
+                }
+                saveProgress();
+                if (currentQuestionIndex < mcqData.length - 1) {
+                    currentQuestionIndex++;
+                }
+                renderQuestion();
+            }
+        }
+
+        // Navigate to previous question
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                renderQuestion();
+            }
+        }
+
+        // Navigate to next question
+        function nextQuestion() {
+            if (currentQuestionIndex < mcqData.length - 1) {
+                currentQuestionIndex++;
+                renderQuestion();
+            }
+        }
+
+        // Finish quiz and show results
+        function finishQuiz() {
+            document.getElementById('questionContainer').classList.add('hidden');
+            document.getElementById('navigation').classList.add('hidden');
+            const resultsContainer = document.getElementById('resultsContainer');
+            resultsContainer.classList.remove('hidden');
+
+            const resultsList = document.getElementById('resultsList');
+            resultsList.innerHTML = '';
+
+            mcqData.forEach(question => {
+                const resultDiv = document.createElement('div');
+                const isCorrect = userAnswers[question.id] === question.correctAnswer;
+                resultDiv.innerHTML = `
+                    <h3 class="text-lg font-semibold">${question.question}</h3>
+                    <p class="text-sm">Your Answer: <span class="${isCorrect ? 'text-green-600' : 'text-red-600'}">${userAnswers[question.id] || 'Not answered'}</span></p>
+                    <p class="text-sm">Correct Answer: <span class="text-green-600">${question.correctAnswer}</span></p>
+                    <p class="text-sm">${isCorrect ? 'Correct!' : 'Incorrect'}</p>
+                    ${question.explanation ? `<p class="text-sm mt-2"><strong>Explanation:</strong> ${question.explanation}</p>` : ''}
+                `;
+                resultsList.appendChild(resultDiv);
+            });
+
+            updateProgress();
+        }
+
+        // Update progress and score display
+        function updateProgress() {
+            document.getElementById('progress').textContent = `${Object.keys(userAnswers).length}/${mcqData.length}`;
+            document.getElementById('score').textContent = score;
+        }
+
+        // Reset progress
+        function resetProgress() {
+            userAnswers = {};
+            score = 0;
+            currentQuestionIndex = 0;
+            localStorage.removeItem('mcqUserAnswers');
+            localStorage.removeItem('mcqScore');
+            renderQuestion();
+        }
+    </script>
+</body>
+</html>
