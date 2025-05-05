@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCQ Practice Platform - Information System Audit</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+    <div class="container mx-auto p-4 max-w-3xl">
+        <h1 class="text-3xl font-bold text-center mb-6">Information System Audit & Standards Quiz</h1>
+
+        <!-- Progress and Score -->
+        <div class="bg-white p-4 rounded-lg shadow-md mb-6 flex justify-between items-center">
+            <div>
+                <p class="text-lg font-semibold">Progress: <span id="progress">0/0</span></p>
+                <p class="text-lg font-semibold">Score: <span id="score">0</span></p>
+            </div>
+            <button onclick="resetProgress()" class="bg-red-500 text-white p-2 rounded-lg hover:bg-red-600">Reset Progress</button>
+        </div>
+
+        <!-- Question Display -->
+        <div id="questionContainer" class="bg-white p-6 rounded-lg shadow-md mb-6">
+            <h2 class="text-xl font-semibold mb-4" id="questionText">Loading...</h2>
+            <div id="optionsContainer" class="space-y-2"></div>
+            <button id="finishButton" onclick="finishQuiz()" class="mt-4 bg-green-500 text-white p-2 rounded-lg hover:bg-green-600 hidden">Finish Quiz</button>
+        </div>
+
+        <!-- Results Display -->
+        <div id="resultsContainer" class="bg-white p-6 rounded-lg shadow-md mb-6 hidden">
+            <h2 class="text-xl font-semibold mb-4">Quiz Results</h2>
+            <div id="resultsList" class="space-y-4"></div>
+            <button onclick="resetProgress()" class="mt-4 bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600">Restart Quiz</button>
+        </div>
+
+        <!-- Navigation -->
+        <div id="navigation" class="flex justify-between">
+            <button onclick="prevQuestion()" class="bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600">Previous</button>
+            <button onclick="nextQuestion()" class="bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600">Next</button>
+        </div>
+    </div>
+
+    <script>
+        // MCQ data from Quiz 11
+        const mcqData = [
+            {
+                id: 1,
+                question: "Which of the following is the MOST important objective of data protection?",
+                options: ["Current technology trend", "Denying or authorizing access to the IS system", "Internal processing efficiency", "Ensuring the confidentiality & integrity of information"],
+                correctAnswer: "Ensuring the confidentiality & integrity of information",
+                explanation: "Maintaining data confidentiality and integrity is the most important objective of data security. This is a basic requirement if an organization is to continue as a viable and successful enterprise."
+            },
+            {
+                id: 2,
+                question: "Which of the following is a good control for protecting confidential data residing on a PC?",
+                options: ["Host-based intrusion detection", "Personal firewall", "File encapsulation", "File encryption"],
+                correctAnswer: "File encryption",
+                explanation: "File encryption is a good control for protecting confidential data residing on a PC."
+            },
+            {
+                id: 3,
+                question: "Which of the following would be MOST useful to an organization planning to adopt a public cloud computing model?",
+                options: ["Management attestation report", "Audit report prepared by the service provider", "Service level agreement (SLA) performance metrics", "Independent control assessment"],
+                correctAnswer: "Service level agreement (SLA) performance metrics"
+            },
+            {
+                id: 4,
+                question: "Hash function will address which of the concerns about electronic message?",
+                options: ["Message integrity", "Message compression", "Message availability", "Message confidentiality"],
+                correctAnswer: "Message integrity"
+            },
+            {
+                id: 5,
+                question: "Which cloud deployment model is MOST likely to be limited in scalability?",
+                options: ["Public", "Community", "Private", "Hybrid"],
+                correctAnswer: "Private"
+            },
+            {
+                id: 6,
+                question: "An IS auditor is evaluating a virtual server environment and learns that the production server, development server, and management console are housed in the same physical host. What should be the auditor's PRIMARY concern?",
+                options: ["The development and production servers share the same host", "The physical host is a single point of failure", "The management console is a single point of failure", "The development server and management console share the same host"],
+                correctAnswer: "The physical host is a single point of failure"
+            },
+            {
+                id: 7,
+                question: "An organization allows employees to use personally owned mobile devices to access customers' personal information. An IS auditor's GREATEST concern should be whether:",
+                options: ["Mobile device security policies have been implemented", "Devices have the capability to segregate business and personal data", "Mobile devices are compatible with company infrastructure", "Devices have adequate storage and backup capabilities"],
+                correctAnswer: "Mobile device security policies have been implemented"
+            },
+            {
+                id: 8,
+                question: "An organization migrated most of its physical servers to virtual ones in its own data center. Which of the following should be of GREATEST concern to an IS auditor reviewing the virtual environment?",
+                options: ["Virtual machine deployments are done without following an approved template", "Hypervisor access control lists are outdated", "The configuration management database (CMDB) does not include all virtual machines", "Hypervisors have not been updated with the most recent patches"],
+                correctAnswer: "Hypervisors have not been updated with the most recent patches"
+            },
+            {
+                id: 9,
+                question: "What is an IS auditor's BEST recommendation to strengthen security guidelines in order to prevent data leakage from the use of smart devices?",
+                options: ["Enforce strong security settings on smart devices", "Require employees to formally acknowledge security procedures", "Review the access logs to the organization's sensitive data in a timely manner", "Include usage restrictions for smart devices in the security procedures"],
+                correctAnswer: "Enforce strong security settings on smart devices"
+            },
+            {
+                id: 10,
+                question: "During a security audit, which of the following is MOST important to review to ensure data confidentiality is managed?",
+                options: ["Network configuration", "Access controls", "Access log monitoring", "Data flows"],
+                correctAnswer: "Access controls"
+            },
+            {
+                id: 11,
+                question: "At a hospital, medical personnel carry handheld computers which contain patient health data. These handheld computers are synchronized with PCs which transfer data from a hospital database. Which of the following would be of the most importance?",
+                options: ["The handheld computers are properly protected to prevent loss of data confidentiality, in case of theft or loss", "Timely synchronization is ensured by policies and procedures", "The employee who deletes temporary files from the local PC, after usage, is authorized to maintain PCs", "The usage of the handheld computers is allowed by the hospital policy"],
+                correctAnswer: "The handheld computers are properly protected to prevent loss of data confidentiality, in case of theft or loss"
+            },
+            {
+                id: 12,
+                question: "A major portion of what is required to address non-repudiation is accomplished through the use of:",
+                options: ["Strong methods for authentication and ensuring data integrity", "Strong methods for authorization and ensuring data integrity", "Strong methods for authentication and ensuring data reliability", "Strong methods for authentication and ensuring data validity"],
+                correctAnswer: "Strong methods for authentication and ensuring data integrity"
+            },
+            {
+                id: 13,
+                question: "Message authenticity and confidentiality is BEST achieved by signing the message using the:",
+                options: ["Sender's public key and encrypting the message using the receiver's private key", "Sender's private key and encrypting the message using the receiver's public key", "Receiver's public key and encrypting the message using the sender's private key", "Receiver's private key and encrypting the message using the sender's public key"],
+                correctAnswer: "Sender's private key and encrypting the message using the receiver's public key"
+            },
+            {
+                id: 14,
+                question: "Digital signatures require the sender to 'sign' the data by encrypting the data with the sender's public key, to then be decrypted by the recipient using the recipient's private key. True or false?",
+                options: ["True", "False"],
+                correctAnswer: "False",
+                explanation: "Digital signatures require the sender to 'sign' the data by encrypting the data with the sender's private key, to then be decrypted by the recipient using the sender's public key."
+            },
+            {
+                id: 15,
+                question: "From the perspective of an information systems (IS) auditor, which of the following is NOT typically considered a risk associated with the implementation of virtualization technologies?",
+                options: ["Inadequate restriction mechanisms around the hypervisor can lead to unintended access", "Utilities designed to enhance communication between host and guest systems could be exploited to escalate privileges", "Insufficient segmentation or improper memory management may expose sensitive data between machines", "A successful compromise of a guest system is completely isolated and has no impact on the host or other guests"],
+                correctAnswer: "A successful compromise of a guest system is completely isolated and has no impact on the host or other guests"
+            }
+        ];
+
+        // State management
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let userAnswers = {};
+
+        // Load progress from localStorage
+        window.onload = function() {
+            const storedAnswers = localStorage.getItem('mcqUserAnswers');
+            const storedScore = localStorage.getItem('mcqScore');
+            if (storedAnswers) userAnswers = JSON.parse(storedAnswers);
+            if (storedScore) score = parseInt(storedScore);
+            renderQuestion();
+            updateProgress();
+        };
+
+        // Save progress to localStorage
+        function saveProgress() {
+            localStorage.setItem('mcqUserAnswers', JSON.stringify(userAnswers));
+            localStorage.setItem('mcqScore', score);
+        }
+
+        // Render current question
+        function renderQuestion() {
+            document.getElementById('resultsContainer').classList.add('hidden');
+            document.getElementById('questionContainer').classList.remove('hidden');
+            document.getElementById('navigation').classList.remove('hidden');
+
+            const question = mcqData[currentQuestionIndex];
+            document.getElementById('questionText').textContent = question.question;
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = '';
+
+            question.options.forEach(option => {
+                const button = document.createElement('button');
+                button.className = `w-full p-2 text-left rounded-lg border ${userAnswers[question.id] === option ? 'bg-blue-100' : 'bg-white'} hover:bg-blue-50`;
+                button.textContent = option;
+                button.onclick = () => selectAnswer(question.id, option);
+                optionsContainer.appendChild(button);
+            });
+
+            // Show "Finish Quiz" button if all questions are answered
+            const finishButton = document.getElementById('finishButton');
+            if (Object.keys(userAnswers).length === mcqData.length) {
+                finishButton.classList.remove('hidden');
+            } else {
+                finishButton.classList.add('hidden');
+            }
+
+            updateProgress();
+        }
+
+        // Handle answer selection
+        function selectAnswer(questionId, selectedOption) {
+            if (!userAnswers[questionId]) {
+                userAnswers[questionId] = selectedOption;
+                const question = mcqData.find(q => q.id === questionId);
+                if (selectedOption === question.correctAnswer) {
+                    score += 1;
+                }
+                saveProgress();
+                if (currentQuestionIndex < mcqData.length - 1) {
+                    currentQuestionIndex++;
+                }
+                renderQuestion();
+            }
+        }
+
+        // Navigate to previous question
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                renderQuestion();
+            }
+        }
+
+        // Navigate to next question
+        function nextQuestion() {
+            if (currentQuestionIndex < mcqData.length - 1) {
+                currentQuestionIndex++;
+                renderQuestion();
+            }
+        }
+
+        // Finish quiz and show results
+        function finishQuiz() {
+            document.getElementById('questionContainer').classList.add('hidden');
+            document.getElementById('navigation').classList.add('hidden');
+            const resultsContainer = document.getElementById('resultsContainer');
+            resultsContainer.classList.remove('hidden');
+
+            const resultsList = document.getElementById('resultsList');
+            resultsList.innerHTML = '';
+
+            mcqData.forEach(question => {
+                const resultDiv = document.createElement('div');
+                const isCorrect = userAnswers[question.id] === question.correctAnswer;
+                resultDiv.innerHTML = `
+                    <h3 class="text-lg font-semibold">${question.question}</h3>
+                    <p class="text-sm">Your Answer: <span class="${isCorrect ? 'text-green-600' : 'text-red-600'}">${userAnswers[question.id] || 'Not answered'}</span></p>
+                    <p class="text-sm">Correct Answer: <span class="text-green-600">${question.correctAnswer}</span></p>
+                    <p class="text-sm">${isCorrect ? 'Correct!' : 'Incorrect'}</p>
+                    ${question.explanation ? `<p class="text-sm mt-2"><strong>Explanation:</strong> ${question.explanation}</p>` : ''}
+                `;
+                resultsList.appendChild(resultDiv);
+            });
+
+            updateProgress();
+        }
+
+        // Update progress and score display
+        function updateProgress() {
+            document.getElementById('progress').textContent = `${Object.keys(userAnswers).length}/${mcqData.length}`;
+            document.getElementById('score').textContent = score;
+        }
+
+        // Reset progress
+        function resetProgress() {
+            userAnswers = {};
+            score = 0;
+            currentQuestionIndex = 0;
+            localStorage.removeItem('mcqUserAnswers');
+            localStorage.removeItem('mcqScore');
+            renderQuestion();
+        }
+    </script>
+</body>
+</html>
